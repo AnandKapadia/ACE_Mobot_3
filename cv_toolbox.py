@@ -11,6 +11,9 @@ def load_image(infilename):
     data = np.array(img);
     return data;
 
+def subsample_image(img, subset_row, subset_col):
+	return img[::subset_row, ::subset_col];
+
 #input nparray npdata
 #input string outfilename
 #output file saved to system
@@ -114,27 +117,37 @@ def double_raster(img, val):
 
 def angle(img, debug):
 	(row, col) = img.shape;
+	
+	mean  = 0.0;
+	count = 0.0;
 	midrow = row;
 	midcol = col/2;
-	angles = [];
-	img_test = (img == 0)*0;
-	img_test = img_test.astype('uint8');
-	for r in range(0, row):
-		if(r != midrow):
-			avg_col = 0;
-			cnt_col = 0;
-			if(sum(img[r][:]) != 0):
-				for c in range(0, col):
-					if(img[r][c] != 0):
-						avg_col += c;
-						cnt_col += 1;
-				avg_col = avg_col / cnt_col;
-				img_test[r][int(avg_col)] = 255;
-				angles.append((midcol - avg_col)/(r-midrow));
-	mean = np.mean(angles);
-	return (img_test, mean);
+	if debug:
+		img_test = (img == 0)*0;
+		img_test = img_test.astype('uint8');
 
-	
+	for r in range(0, row):
+		avg_col = 0;
+		cnt_col = 0;
+		if(sum(img[r][:]) != 0):
+			for c in range(0, col):
+				if(img[r][c] != 0):
+					avg_col += c;
+					cnt_col += 1;
+			avg_col = avg_col / cnt_col;
+			if debug:
+				img_test[r][int(avg_col)] = 255;
+			mean  += (midcol - avg_col);
+			count += 1;
+	if count == 0:
+		mean = 0;
+	else:
+		mean = mean / count;
+		mean = mean / row;
+	if debug:
+		return (img_test, mean);
+	else:
+		return mean;
 
 #this function has NOT been tested
 def largest_bin(img):
