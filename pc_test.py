@@ -1,12 +1,13 @@
 import cv_toolbox as cv
 import numpy as np
+import time
 
 img = cv.load_image('test1.jpg');
 img = cv.subsample_image(img, 20, 20);
 gray = cv.grayscale(img);
 gauss = cv.gaussian(gray, 3);
 thresh = cv.threshold(gauss, 150, 255);
-debug = 1;
+debug = 0;
 if debug:
 	(img_avg, angle) = cv.angle(thresh, debug);
 else:
